@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./app
+    ports:
+      - "8000:8000"
+
+  front-endv2:
+    build:
+      context: ./front-endv2/front-endv2
+    ports:
+      - "5173:5173"
+
+  service_register:
+    build:
+      context: ./service_register
+    ports:
+      - "8001:8001"
