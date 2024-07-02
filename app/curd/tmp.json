@@ -1,0 +1,103 @@
+{
+    "charts": [
+        {
+            "config": {
+                "type": "LPC",
+                "name": "22"
+            },
+            "dataset": {
+                "datasetid": 10,
+                "config": {
+                    "host": "127.0.0.1",
+                    "port": "5433",
+                    "user": "postgres",
+                    "password": "zzh0117.",
+                    "type": "psql",
+                    "database": "al",
+                    "query": "select * from test limit 10;\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+                },
+                "example_row": {
+                    "date": "2016-07-01 00:00:00",
+                    "HUFL": "5.827000141143799",
+                    "HULL": "2.009000062942505",
+                    "MUFL": "1.5989999771118164",
+                    "MULL": "0.4620000123977661",
+                    "LUFL": "4.203000068664552",
+                    "LULL": "1.3400000333786009",
+                    "OT": "30.5310001373291"
+                },
+                "query": "select * from test limit 10;\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+                "dataset_name": "test"
+            },
+            "mapping": {
+                "date": [
+                    "date"
+                ],
+                "x_predict": [
+                    "HUFL"
+                ],
+                "x_orient": [
+                    "HULL"
+                ]
+            },
+            "chartid": 10,
+            "key": 10
+        },
+        {
+            "config": {
+                "type": "LPC",
+                "name": "11"
+            },
+            "dataset": {
+                "datasetid": 10,
+                "config": {
+                    "host": "127.0.0.1",
+                    "port": "5433",
+                    "user": "postgres",
+                    "password": "zzh0117.",
+                    "type": "psql",
+                    "database": "al",
+                    "query": "select * from test limit 10;\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+                },
+                "example_row": {
+                    "date": "2016-07-01 00:00:00",
+                    "HUFL": "5.827000141143799",
+                    "HULL": "2.009000062942505",
+                    "MUFL": "1.5989999771118164",
+                    "MULL": "0.4620000123977661",
+                    "LUFL": "4.203000068664552",
+                    "LULL": "1.3400000333786009",
+                    "OT": "30.5310001373291"
+                },
+                "query": "select * from test limit 10;\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+                "dataset_name": "test"
+            },
+            "mapping": {
+                "date": [
+                    "date"
+                ],
+                "x_predict": [
+                    "HUFL"
+                ],
+                "x_orient": [
+                    "HUFL"
+                ]
+            },
+            "chartid": 9,
+            "key": 9
+        }
+    ],
+    "layout": [
+        {
+            "style": "",
+            "data-x": null,
+            "data-y": null
+        },
+        {
+            "style": "transform: translate(-185px, 251px);",
+            "data-x": null,
+            "data-y": null
+        }
+    ],
+    "dashboard_name": "dashboard22"
+}
