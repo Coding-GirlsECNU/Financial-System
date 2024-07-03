@@ -1,0 +1,7 @@
+app:
+  database_url: 127.0.0.1
+  user: postgres
+  password: zzh0117.
+  port: 5432
+  database: al
+
