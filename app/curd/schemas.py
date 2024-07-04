@@ -61,6 +61,14 @@ class Model(BaseModel):
     class Config:
         orm_mode = True
 
+class ModelDataset(BaseModel):
+    model_name:str
+    dataset:str
+    model_config:dict
+
+    class Config:
+        orm_mode = True
+
 
 class Bootstrap(BaseModel):
     datasource: List[DataSource]
@@ -69,6 +77,7 @@ class Bootstrap(BaseModel):
     dataset: List[Dataset]
     chart_template: List[ChartTemplate]
     models: List[Model]
+    model_datasets:List[ModelDataset]
 
     class Config:
         orm_mode = True

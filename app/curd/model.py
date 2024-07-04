@@ -45,3 +45,9 @@ class Models(Base):
     id = Column(Integer, primary_key=True, index=True)
     model_name = Column(String)
     model_config = Column(JSON)
+
+class ModelDatasets(Base):
+    __tablename__='model_dataset'
+    model_name=Column(String, primary_key=True)
+    dataset=Column(String, primary_key=True)
+    model_config=Column(JSON)
