@@ -30,7 +30,7 @@
                 <el-col :span="6" class="w-full h-full" v-if="selectedModel">
                     <ConfigList @confirmUpdate="handleConfig" class="border-solid border-2 border-gray-200 h-full"
                         v-if="models.filter(model => model.model_name === selectedModel)[0]"
-                        :config="models.filter(model => model.model_name === selectedModel)[0]?.model_config">
+                        :config="models.filter(model => model.model_name === selectedModel)[0]?.model_config1">
                     </ConfigList>
                 </el-col>
                 <el-col :span="18" class="w-full h-full">
@@ -87,8 +87,8 @@ let example = ref(null)
 
 watch(selectedModel, (val, oldVal) => {
     let model = models.value.filter(model => model.model_name === val)[0]
-    mapping.value = model.model_config.input
-    example.value = model.model_config.example
+    mapping.value = model.model_config1.input
+    example.value = model.model_config1.example
 })
 let handleConfig = (arg) => {
     arg.forEach(item => {
@@ -101,7 +101,7 @@ let confirm = () => {
     formData.append('model_name', selectedModel.value)
     formData.append('dataset', datasets.value.filter(item => item.datasetid === selectedDataset.value)[0])
     formData.append('mapping', mapping.value)
-    formData.append('config', models.value.filter(model => model.model_name === selectedModel.value)[0].model_config)
+    formData.append('config', models.value.filter(model => model.model_name === selectedModel.value)[0].model_config1)
     let param = {
         'model_name': selectedModel.value, 'dataset': datasets.value.filter(item => item.datasetid === selectedDataset.value)[0],
         'mapping': mapping.value, 'config': modelConfig.value

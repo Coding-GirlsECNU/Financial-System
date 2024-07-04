@@ -37,7 +37,7 @@ once you have done this, you can visit `http://localhost:5173` to see the websit
 ### add to DB 
 In this system, we use `PostgreSQL` as our database.
 
-> host: 113.31.110.212
+> host: 47.95.213.242
 > 
 > database: al
 > 
@@ -45,7 +45,7 @@ In this system, we use `PostgreSQL` as our database.
 > 
 > password:zzh0117.
 > 
-> port:5432
+> port:5433
 >
 >
 > 

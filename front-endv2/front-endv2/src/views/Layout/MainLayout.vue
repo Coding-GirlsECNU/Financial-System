@@ -33,7 +33,7 @@
                             <el-icon>
                                 <location />
                             </el-icon>
-                            <span>策略模块(PAR2)</span>
+                            <span>算法模块</span>
                         </el-menu-item>
                         <el-menu-item :route="{ name: 'datasourceLayout' }" index="2"  style="font-size: 20px;">
                             <el-icon>
@@ -45,7 +45,7 @@
                             <el-icon>
                                 <document />
                             </el-icon>
-                            <span>算法模块(PART1)</span>
+                            <span>图表模块</span>
                         </el-menu-item>
                         <el-menu-item index="4" :route="{ name: 'dashboard' }" style="font-size: 20px;">
                             <el-icon>
