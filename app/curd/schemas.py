@@ -56,7 +56,7 @@ class ChartTemplate(BaseModel):
 class Model(BaseModel):
     id: int
     model_name: str
-    model_config: dict
+    model_config1: dict
 
     class Config:
         orm_mode = True

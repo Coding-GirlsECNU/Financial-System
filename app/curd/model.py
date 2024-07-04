@@ -44,4 +44,4 @@ class Models(Base):
     __tablename__ = "model"
     id = Column(Integer, primary_key=True, index=True)
     model_name = Column(String)
-    model_config = Column(JSON)
+    model_config1 = Column(JSON)
