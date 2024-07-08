@@ -56,6 +56,9 @@ class ChartTemplate(BaseModel):
 class Model(BaseModel):
     id: int
     model_name: str
+<<<<<<< HEAD
+    model_config1: dict
+=======
     model_config: dict
 
     class Config:
@@ -65,6 +68,7 @@ class ModelDataset(BaseModel):
     model_name:str
     dataset:str
     model_config:dict
+>>>>>>> origin/empty
 
     class Config:
         orm_mode = True
@@ -77,7 +81,10 @@ class Bootstrap(BaseModel):
     dataset: List[Dataset]
     chart_template: List[ChartTemplate]
     models: List[Model]
+<<<<<<< HEAD
+=======
     model_datasets:List[ModelDataset]
+>>>>>>> origin/empty
 
     class Config:
         orm_mode = True
