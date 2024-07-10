@@ -18,9 +18,9 @@
                     <el-menu :collapse="collapse" class=" h-screen overflow-hidden" :default-active="defaultActivate"
                         router>
                         <div class="h-10 border-b-2 flex border-gray-100 items-center" style="width: 100%;">
-                            <div class="flex-1 text-center m-auto" v-if="!collapse" style="font-size: 25px;color:white;background-color: #5cadff; border-radius: 10px;">
+                            <!-- <div class="flex-1 text-center m-auto" v-if="!collapse" style="font-size: 25px;color:white;background-color: #5cadff; border-radius: 10px;">
                                 服务管理
-                            </div>
+                            </div> -->
                             <div @click="collapse = !collapse">
                                 <el-icon class="mt-2 m-auto text-2xl pl-5 text-zinc-600 cursor-pointer">
                                     <Operation />
@@ -39,25 +39,25 @@
                             <el-icon>
                                 <document />
                             </el-icon>
-                            <span>数据源模块</span>
+                            <span>策略模块</span>
                         </el-menu-item>
                         <el-menu-item :route="{ name: 'newChartView' }" index="3" style="font-size: 20px;">
                             <el-icon>
                                 <document />
                             </el-icon>
-                            <span>图表模块</span>
+                            <span>数据模块</span>
                         </el-menu-item>
                         <el-menu-item index="4" :route="{ name: 'dashboard' }" style="font-size: 20px;">
                             <el-icon>
                                 <setting />
                             </el-icon>
-                            <span>大屏模块</span>
+                            <span>因子分析</span>
                         </el-menu-item>
                         <el-menu-item index="5" :route="{ name: 'dashboardList' }" style="font-size: 20px;">
                             <el-icon>
                                 <setting />
                             </el-icon>
-                            <span>大屏集合</span>
+                            <span>上传数据</span>
                         </el-menu-item>
                     </el-menu>
                 </div>
@@ -78,10 +78,11 @@ let defaultActivate = ref('1')
 let dropdownMenu = ref(null)
 let collapse = ref(false)
 let pathNameMapping = [
-    { name: 'algorithms', index: '1' },
-    { name: 'newChartView', index: '3' },
-    { name: 'chooseView', index: '3' },
-    { name: 'datasourceLayout', index: '2' },
+    { name: 'newChartView', index: '1' },
+    { name: 'algorithms', index: '2' },
+    
+    // { name: 'chooseView', index: '3' },
+    { name: 'datasourceLayout', index: '3' },
     { name: 'dashboard', index: '4' },
     { name: 'dashboardList', index: '5' },
 ]
