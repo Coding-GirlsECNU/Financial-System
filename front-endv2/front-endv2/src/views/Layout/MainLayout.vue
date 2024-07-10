@@ -29,9 +29,9 @@
                         </div>
                         <el-divider class="m-0 p-0" />
 
-                        <el-menu-item :route="{ name: 'algorithms' }" index="1" style="font-size: 20px;">
+                        <el-menu-item :route="{ name: 'newChartView' }" index="1" style="font-size: 20px;">
                             <el-icon>
-                                <location />
+                                <document />
                             </el-icon>
                             <span>算法模块</span>
                         </el-menu-item>
@@ -41,7 +41,7 @@
                             </el-icon>
                             <span>策略模块</span>
                         </el-menu-item>
-                        <el-menu-item :route="{ name: 'newChartView' }" index="3" style="font-size: 20px;">
+                        <el-menu-item :route="{ name: 'algorithms' }" index="3" style="font-size: 20px;">
                             <el-icon>
                                 <document />
                             </el-icon>
@@ -80,7 +80,7 @@ let collapse = ref(false)
 let pathNameMapping = [
     { name: 'newChartView', index: '1' },
     { name: 'algorithms', index: '2' },
-    
+
     // { name: 'chooseView', index: '3' },
     { name: 'datasourceLayout', index: '3' },
     { name: 'dashboard', index: '4' },
