@@ -66,8 +66,8 @@
           <el-button type="primary" @click="confirm">开始绘制</el-button>
         </div>
       </div>
-      <div class="m-4">
-        <el-select v-model="chartValue" class="m-4">
+      <div class="m-4"><!--7.4增加多选功能-->
+        <el-select v-model="chartValue" class="m-4" multiple>
           <el-option v-for="item in options.filter(item => item.dataset == value)" :key="item.model_name" :label="item.model_name" :value="item.model_name" />
         </el-select>
         <!-- <el-date-picker v-model="chooseDate" type="date" placeholder="选择日期" :picker-options="pickerOptions" @change="dateChange"> 
@@ -77,8 +77,12 @@
 
       </div>
     </div>
-    <div class="h-1/2 border-gray-400 bg-sky-50" style="margin-top: 18px; max-width: 1210px;" >
+    <!--7.4增加多选功能-->
+    <!-- <div class="h-1/2 border-gray-400 bg-sky-50" style="margin-top: 18px; max-width: 1210px;" >
       <TimeSeries v-if="data && data.length > 0" :formData="data" :chart="'TSL'" ref="chartRef" :mapping="mapping"/>
+    </div> -->
+    <div class="h-1/2 border-gray-400 bg-sky-50" style="margin-top: 18px; max-width: 1210px;" >
+      <MultiLineChart v-if="data && data.length > 0" :formData="data" :chart="'TSL'" ref="chartRef" :mapping="mapping"/>
     </div>
 
     <div class="mt-4 bg-sky-50" style="width: 97.2%;">
@@ -100,13 +104,16 @@ import { useRouter } from 'vue-router'
 import { deleteChart, getAllChart } from "@/api/chart/chartApi";
 import { execQuery } from '@/api/sqllab/utils';
 import TimeSeries from '@/components/charts/TimeSeries.vue';
+// 7.4增加多选功能
+import MultiLineChart from '@/components/charts/MultiLineChart.vue';
 import DecChart from "@/components/charts/DecChart.vue";
 import { GenNonDuplicateID } from '../../utils/utils';
 const router = useRouter()
 const bootstrapStore = useBootstrapStore();
 let options = ref(bootstrapStore.bootstrap.model_datasets);
 let uniqueDatasets = [...new Set(options.value.map(item => item.dataset))];
-console.log(uniqueDatasets)
+//需要改：确保每个用户都能看到自己的数据集
+console.log("uniqueDatasets",uniqueDatasets)
 //let dataset_name=去重
 //TODO: // replace chart with real data
 let modelOption=ref(['xgboost', 'triformer'])
@@ -194,8 +201,13 @@ const pickerOptions = ref({
   }
 });
 
+// mapping={
+//             "X_predict":["pred"],
+//             "X":["real"],
+//             "date":["date"]
+//         }
 mapping={
-            "X_predict":["pred"],
+            "X_predict1":["pred"],
             "X":["real"],
             "date":["date"]
         }
@@ -237,97 +249,114 @@ let confirm = () => {
         console.log("tabledata",tableData)
 
 }
-
+//7.4添加多选功能
 let fetchData_liner = async () => {
   //取pred值
-  const data_pred = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:"SELECT * FROM public.\"datasetName_day_pred\" WHERE \"start_date\"='DATE' AND \"model\"='modelName' ORDER BY step ASC LIMIT 5",
-    type: "psql",
-    user: "postgres"
-};
-  const newQuery1_pred = data_pred.query.replace('datasetName', datasetName);
-  const newQuery2_pred = newQuery1_pred.replace('modelName', modelName);
-  const newQuery3_pred = newQuery2_pred.replace('DATE', dateString);
-  const newData_pred = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:newQuery3_pred,
-    type: "psql",
-    user: "postgres"
-}
-  console.log("pred_config",newData_pred)
-  let pred_table = await execQuery(newData_pred)
-  console.log("pred",pred_table.data)
-
-  //取history值
-  //const data_history_query="SELECT \"time\",\"close\" FROM public.history WHERE \"code\"='datasetName'ORDER BY TO_DATE(\"time\", 'YYYY-MM-DD') ASC LIMIT 489",
-const data_history_query="(SELECT * FROM (SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" < 'dateString' ORDER BY \"time\" DESC  LIMIT 25) AS before_specified_date ORDER BY \"time\" ASC) UNION ALL(SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" = 'dateString')UNION ALL(SELECT * FROM (SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" > 'dateString' ORDER BY \"time\" ASC LIMIT 4) AS after_specified_date ORDER BY \"time\" ASC);"
-const newQuery1_history = data_history_query.replace(/datasetName/g, datasetName);
-const newQuery2_history =newQuery1_history.replace(/dateString/g, dateString);
-  const newData_history = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:newQuery2_history,
-    type: "psql",
-    user: "postgres"
-}
-  let history_table = await execQuery(newData_history)
-  // console.log("history",history_table.data)
-  const historyData = history_table.data;
-  const predData = pred_table.data;
-
+  let allData = [];
+  console.log("modelName",modelName)
+  const modelNames = modelName.split(',');
   // 创建一个空数组用于存储合并后的数据
-  let newTable = [];
-
-  // 合并数据
-  for (let i = 0; i < historyData.length; i++) {
-    let newData = {};
-
-    // 设置日期属性
-    newData.date = historyData[i].time;
-
-    // 设置实际值属性
-    newData.real = historyData[i].close;
-
-    // 设置预测值属性
-    if(i>=historyData.length-predData.length){
-      newData.pred = (predData[i-(historyData.length-predData.length)].pred_return+1)*historyData[i-1].close;
+  
+  for (const singlemodelName of modelNames)
+  {
+    const data_pred = {
+      database: "al",
+      host: "47.95.213.242",
+      password:"zzh0117.",
+      port:"5433",
+      query:"SELECT * FROM public.\"datasetName_day_pred\" WHERE \"start_date\"='DATE' AND \"model\"='modelName' ORDER BY step ASC LIMIT 5",
+      type: "psql",
+      user: "postgres"
+      };
+    const newQuery1_pred = data_pred.query.replace('datasetName', datasetName);
+    const newQuery2_pred = newQuery1_pred.replace('modelName', singlemodelName);
+    const newQuery3_pred = newQuery2_pred.replace('DATE', dateString);
+    const newData_pred = {
+      database: "al",
+      host: "47.95.213.242",
+      password:"zzh0117.",
+      port:"5433",
+      query:newQuery3_pred,
+      type: "psql",
+      user: "postgres"
     }
-    else{
-      newData.pred=null
+    console.log("pred_config",newData_pred)
+    let pred_table = await execQuery(newData_pred)
+    console.log("pred",pred_table.data)
+
+    //取history值
+    //const data_history_query="SELECT \"time\",\"close\" FROM public.history WHERE \"code\"='datasetName'ORDER BY TO_DATE(\"time\", 'YYYY-MM-DD') ASC LIMIT 489",
+    const data_history_query="(SELECT * FROM (SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" < 'dateString' ORDER BY \"time\" DESC  LIMIT 25) AS before_specified_date ORDER BY \"time\" ASC) UNION ALL(SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" = 'dateString')UNION ALL(SELECT * FROM (SELECT * FROM public.history WHERE \"code\" = 'datasetName' AND \"time\" > 'dateString' ORDER BY \"time\" ASC LIMIT 4) AS after_specified_date ORDER BY \"time\" ASC);"
+    const newQuery1_history = data_history_query.replace(/datasetName/g, datasetName);
+    const newQuery2_history =newQuery1_history.replace(/dateString/g, dateString);
+    const newData_history = {
+      database: "al",
+      host: "47.95.213.242",
+      password:"zzh0117.",
+      port:"5433",
+      query:newQuery2_history,
+      type: "psql",
+      user: "postgres"
     }
-    // 将新对象添加到数组中
-    newTable.push(newData);
-}
+    let history_table = await execQuery(newData_history)
+    // console.log("history",history_table.data)
+    const historyData = history_table.data;
+    const predData = pred_table.data;
+    let newTable = [];
+    // 合并数据
+    for (let i = 0; i < historyData.length; i++) 
+    {
+      let newData = {};
 
-  // console.log("newTable",newTable)
+      // 设置日期属性
+      newData.date = historyData[i].time;
 
-    return newTable
+      // 设置实际值属性
+      newData.real = historyData[i].close;
+
+      // 设置预测值属性
+      if(i>=historyData.length-predData.length){
+        newData.pred = (predData[i-(historyData.length-predData.length)].pred_return+1)*historyData[i-1].close;
+      }
+      else{
+        newData.pred=null
+      }
+      // 将新对象添加到数组中
+      newTable.push(newData);
+    }
+    allData.push({
+          modelName: singlemodelName,
+          data: newTable
+        });
+  }
+console.log("allData",allData);
+    return allData
 }
 let fetchData_table = async () => {
-  const metrics_query="SELECT model_name, metrics, ROUND(value, 6) AS value FROM public.metrics_day_pred WHERE stock='datasetName' AND model_name='modelName'"
-  const newQuery1_metrics = metrics_query.replace(/datasetName/g, datasetName);
-  const newQuery2_metrics =newQuery1_metrics.replace(/modelName/g, modelName);
-  const data_metrics = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:newQuery2_metrics,
-    type: "psql",
-    user: "postgres"
-};
-  let table = await execQuery(data_metrics)
-  // console.log("tableData_table",table)
-    return table.data
+  const modelNames = modelName.split(',');
+  let multiTableData = [];
+  for (const singlemodelName of modelNames)
+  {
+    const metrics_query="SELECT model_name, metrics, ROUND(value, 6) AS value FROM public.metrics_day_pred WHERE stock='datasetName' AND model_name='modelName'"
+    const newQuery1_metrics = metrics_query.replace(/datasetName/g, datasetName);
+    const newQuery2_metrics =newQuery1_metrics.replace(/modelName/g, singlemodelName);
+    const data_metrics = {
+      database: "al",
+      host: "47.95.213.242",
+      password:"zzh0117.",
+      port:"5433",
+      query:newQuery2_metrics,
+      type: "psql",
+      user: "postgres"
+  };
+    let table = await execQuery(data_metrics)
+    console.log("table",table.data)
+    multiTableData.push(table.data)
+
+  }
+  console.log("multiTableData",multiTableData)
+  const mergedArray = multiTableData.reduce((acc, curr) => acc.concat(curr), []);
+  return mergedArray
 }
 
 let handleDeleteChart = (payload) => {

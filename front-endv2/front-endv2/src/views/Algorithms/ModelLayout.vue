@@ -2,10 +2,10 @@
     <div class="w-full h-screen">
         <div class="flex justify-start" style="margin-left: 25px;margin-top: 18px;">
             <div class="module-border-wrap flex items-center">
-                <div class="module">
+                <div class="module"><!--7.8增加多选功能-->
                     <span class="blink">选择策略</span>
                 </div>
-                <el-select v-model="selectedModel" style="margin-left: 6px; width: 350px;">
+                <el-select v-model="selectedModel" multiple style="margin-left: 6px; width: 350px;">
                     <el-option v-for="val in models" :key="val.id" :value="val.model_name">
                         {{ val.model_name }}
                     </el-option>
@@ -35,34 +35,38 @@
                 <el-col :span="20" class="w-full h-1/3" v-if="selectedModel" style="margin-left: 10px; margin-top: 20px;">
                     <ConfigList @confirmUpdate="handleConfig" class="border-solid border-2 border-gray-200 w-full mt-4 ml-4 config-list"
                         v-if="models.filter(model => model.model_name === selectedModel)[0]"
-                        :config="models.filter(model => model.model_name === selectedModel)[0]?.model_config1">
+                        :config="models.filter(model => model.model_name === selectedModel)[0]?.model_config">
                     </ConfigList>
                 </el-col>
                 <el-col :span="20" class="w-full h-full mt-12">
                     <div class="h-full border-gray-400 bg-sky-50" style="margin-left: 21px;width: 1200px;">
-                        <SingleLineChart v-if="linerdata && linerdata.length > 0" :formData="linerdata" :chart="'SLC'" ref="chartRef" :mapping="mapping"/>
+                        <SingleLineChart_mul v-if="linerdata && linerdata.length > 0" :formData="linerdata" :chart="'SLC'" ref="chartRef" :mapping="mapping"/>
                     </div>
                 </el-col>
                 <el-col :span="20" class="w-full h-full mt-12" style="margin-left: 20px;">
                     <el-date-picker v-model="chooseDate" type="date" placeholder="选择日期" :disabled-date="checkAllowedDates" :defaultValue="start_date" @change="dateChange"> 
                     </el-date-picker>
-                </el-col>
-                <el-table :data="tableData" border style="width: 1200px; margin-top: -190px; margin-left: 28px;" class="bg-sky-50">
+                </el-col><!--7.8增加多选功能-->
+                <!-- <el-table :data="tableData" border style="width: 1200px; margin-top: -190px; margin-left: 28px;" class="bg-sky-50">
                     <el-table-column prop="stock" label="股票名称"></el-table-column>
                     <el-table-column prop="rank" label="排名"></el-table-column>
-                </el-table>
+                </el-table> -->
+                <el-table :data="tableData" border style="width: 1200px; margin-top: -190px; margin-left: 28px;" class="bg-sky-50">
+                    <el-table-column prop="modelName" label="模型名称"></el-table-column>
+                    <el-table-column>
+                        <template #default="{ row }">
+                        <el-table :data="row.data" border style="width: 100%">
+                            <el-table-column prop="stock" label="股票名称"></el-table-column>
+                            <el-table-column prop="rank" label="排名"></el-table-column>
+                        </el-table>
+                        </template>
+                    </el-table-column>
+                    </el-table>
+
             </el-row>
-            <!-- <el-table :data="tableData" border style="width: 1200px; margin-top: 180px; margin-left: 20px;" class="bg-sky-50">
-                <el-table-column prop="stock" label="股票名称"></el-table-column>
-                <el-table-column prop="rank" label="排名"></el-table-column>
-            </el-table> -->
+            
         </div>
-        <!-- <div class="w-full h-full" style="margin-top: -250px; margin-left: 20px; ">
-            <el-table :data="tableData" border style="width: 1200px;" class="bg-sky-50">
-            <el-table-column prop="stock" label="股票名称"></el-table-column>
-            <el-table-column prop="rank" label="排名"></el-table-column>
-        </el-table>
-        </div> -->
+       
     </div>
 </template>
  
@@ -73,7 +77,7 @@ import { axios } from '../../api/axios'
 import { useBootstrapStore } from '../../stores/counter';
 import { ElMessage } from "element-plus";
 import ConfigList from '../../components/algorithm/ConfigList.vue'
-import SingleLineChart from '@/components/charts/SingleLineChart.vue';
+import SingleLineChart_mul from '@/components/charts/SingleLineChart_mul.vue';
 import DecChart from '../../components/charts/DecChart.vue';
 import { saveDataset } from "@/api/sqllab/utils";
 import dayjs from "dayjs";
@@ -84,7 +88,7 @@ let mapping = ref([])
 let modelConfig = ref({});
 let date_range = ref([]) 
 let dateString=ref([])
-let selectedModel = ref(null);
+let selectedModel = ref([]);
 let chooseDate=ref([])
 let example = ref(null)
 let linerdata=ref([])
@@ -136,16 +140,17 @@ let dateChange = () =>{
 }
 
 
-mapping={
-            "x_orient":["x_orient"],
-            "date":["date"]
-        }
+// mapping={
+//             "x_orient":["x_orient"],
+//             "date":["date"]
+//         }
 //加上selectDataset
-watch(selectedModel, (val, oldVal) => {
-    let model = models.value.filter(model => model.model_name === val)[0]
-    //mapping.value = model.model_config.input
-    example.value = model.model_config1.example
-})
+//这个watch函数可不要
+// watch(selectedModel, (val, oldVal) => {
+//     let model = models.value.filter(model => model.model_name === val)[0]
+//     //mapping.value = model.model_config.input
+//     example.value = model.model_config.example
+// })
 let handleConfig = (arg) => {
     arg.forEach(item => {
         modelConfig.value[item[0]] = item[1]
@@ -171,60 +176,148 @@ let confirm = () => {
         console.log("tabledata",tableData)
 }
 
-
+//增加多选功能
 let fetchData_liner = async () => {
+    let newTable = [];
+    let dateIndexMap = {}; // 用于快速查找相同日期的索引
 
-  let query_total="SELECT * FROM public.\"total_value\" WHERE \"strategy\"='modelName' ORDER BY date ASC"
+    // 遍历 selectedModels 数组，对每个模型名称分别执行查询
+    for (let modelName of selectedModel.value) {
+        let query_total = `SELECT * FROM public."total_value" WHERE "strategy"='${modelName}' ORDER BY date ASC`;
 
-  const newQuery_total = query_total.replace('modelName', selectedModel.value);
-  const newData_total = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:newQuery_total,
-    type: "psql",
-    user: "postgres"
-}
-  console.log("total_config",newData_total)
-  let total_table = await execQuery(newData_total)
-  console.log("total",total_table.data)
-  const totalData = total_table.data;
-  // 创建一个空数组用于存储合并后的数据
-  let newTable = [];
-  for (let i = 0; i < totalData.length; i++) {
-    let newData = {};
+        const newData_total = {
+            database: "al",
+            host: "47.95.213.242",
+            password: "zzh0117.",
+            port: "5433",
+            query: query_total,
+            type: "psql",
+            user: "postgres"
+        };
 
-    // 设置日期属性
-    newData.date = totalData[i].date;
+        console.log("total_config", newData_total);
+        let total_table = await execQuery(newData_total);
+        console.log("total", total_table.data);
+        const totalData = total_table.data;
 
-    // 设置实际值属性
-    newData.x_orient = totalData[i].total_value;
+        // 合并每个模型的数据到 newTable 数组中
+        for (let i = 0; i < totalData.length; i++) {
+            let date = totalData[i].date;
 
-    // 将新对象添加到数组中
-    newTable.push(newData);
-}
-
-    return newTable
-}
-
-let fetchData_table = async () => {
-  const metrics_query="SELECT stock, rank FROM public.selection WHERE date='chooseDate' AND strategy='selectedModel' ORDER BY rank ASC"
-  const newQuery1_metrics = metrics_query.replace(/chooseDate/g, dateString);
-  const newQuery2_metrics =newQuery1_metrics.replace(/selectedModel/g, selectedModel.value);
-  const data_metrics = {
-    database: "al",
-    host: "47.95.213.242",
-    password:"zzh0117.",
-    port:"5433",
-    query:newQuery2_metrics,
-    type: "psql",
-    user: "postgres"
+            if (dateIndexMap[date] !== undefined) {
+                // 如果 newTable 中已存在相同日期的数据，合并新数据
+                newTable[dateIndexMap[date]][`x_value_${modelName}`] = totalData[i].total_value;
+            } else {
+                // 如果 newTable 中不存在相同日期的数据，添加新数据
+                let newData = {};
+                newData.date = date;
+                newData[`x_value_${modelName}`] = totalData[i].total_value;
+                newTable.push(newData);
+                dateIndexMap[date] = newTable.length - 1; // 更新日期索引映射
+            }
+        }
+    }
+    console.log("newTable",newTable)
+    return newTable;
 };
-    console.log("query",data_metrics)
-  let table = await execQuery(data_metrics)
-  console.log("tableData_table",table)
-    return table.data
+
+// let fetchData_liner = async () => {
+
+//   let query_total="SELECT * FROM public.\"total_value\" WHERE \"strategy\"='modelName' ORDER BY date ASC"
+
+//   const newQuery_total = query_total.replace('modelName', selectedModel.value);
+//   const newData_total = {
+//     database: "al",
+//     host: "47.95.213.242",
+//     password:"zzh0117.",
+//     port:"5433",
+//     query:newQuery_total,
+//     type: "psql",
+//     user: "postgres"
+// }
+//   console.log("total_config",newData_total)
+//   let total_table = await execQuery(newData_total)
+//   console.log("total",total_table.data)
+//   const totalData = total_table.data;
+//   // 创建一个空数组用于存储合并后的数据
+//   let newTable = [];
+//   for (let i = 0; i < totalData.length; i++) {
+//     let newData = {};
+
+//     // 设置日期属性
+//     newData.date = totalData[i].date;
+
+//     // 设置实际值属性
+//     newData.x_orient = totalData[i].total_value;
+
+//     // 将新对象添加到数组中
+//     newTable.push(newData);
+// }
+
+//     return newTable
+// }
+
+// let fetchData_table = async () => {
+//   const metrics_query="SELECT stock, rank FROM public.selection WHERE date='chooseDate' AND strategy='selectedModel' ORDER BY rank ASC"
+//   const newQuery1_metrics = metrics_query.replace(/chooseDate/g, dateString);
+//   const newQuery2_metrics =newQuery1_metrics.replace(/selectedModel/g, selectedModel.value);
+//   const data_metrics = {
+//     database: "al",
+//     host: "47.95.213.242",
+//     password:"zzh0117.",
+//     port:"5433",
+//     query:newQuery2_metrics,
+//     type: "psql",
+//     user: "postgres"
+// };
+//     console.log("query",data_metrics)
+//   let table = await execQuery(data_metrics)
+//   console.log("tableData_table",table)
+//     return table.data
+// }
+
+
+//增加多选功能
+let fetchData_table = async () => {
+  // 初始化一个空数组来存储所有模型的数据
+  let allTables = [];
+
+  // 遍历每个选定的模型
+  for (let model of selectedModel.value) {
+    // 构建查询语句
+    const metrics_query = `
+      SELECT stock, rank 
+      FROM public.selection 
+      WHERE date = '${dateString}' 
+      AND strategy = '${model}' 
+      ORDER BY rank ASC
+    `;
+
+    // 数据库查询配置
+    const data_metrics = {
+      database: "al",
+      host: "47.95.213.242",
+      password: "zzh0117.",
+      port: "5433",
+      query: metrics_query,
+      type: "psql",
+      user: "postgres"
+    };
+
+    console.log("query", data_metrics);
+    
+    // 执行查询
+    let table = await execQuery(data_metrics);
+    console.log(`tableData for ${model}`, table);
+
+    // 将每个模型的数据添加到数组中
+    allTables.push({
+      modelName: model,
+      data: table.data // 假设查询结果直接放在 table.data 中
+    });
+  }
+  console.log("allTables",allTables)
+  return allTables; // 返回包含所有模型数据的数组
 }
 
 
