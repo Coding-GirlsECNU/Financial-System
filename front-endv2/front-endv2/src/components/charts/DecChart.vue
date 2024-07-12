@@ -8,7 +8,8 @@
             :mapping="props.mapping" />
         <TableChart v-if="data && data.length > 0 && props.ctype === 'Table'" class="w-full h-full"
             :is="props.ctype === 'Table'" :form-data="data" :mapping="props.mapping" :mode="mode" ref="chart" />
-
+        <SingleLineChart v-if="data && data.length > 0 && props.ctype === 'SLC'" class="w-full h-full" :form-data="data" :mapping="props.mapping"
+            :is="props.ctype === 'SLC'" :chart-id="props.chartId"  />
     </div>
 </template>
  
@@ -17,8 +18,9 @@ import { ref, onMounted } from 'vue'
 import { transferMapping } from '@/utils/utils';
 import { execQuery } from '@/api/sqllab/utils';
 import LinePredictChart from "@/components/charts/LinePredictChart.vue";
-import TableChart from './TableChart.vue';
+import TableChart from '@/components/charts/TableChart.vue';
 import TimeSeries from '@/components/charts/TimeSeries.vue';
+import SingleLineChart from '@/components/charts/SingleLineChart.vue';
 let data = ref([])
 let chart = ref()
 const props = defineProps(
