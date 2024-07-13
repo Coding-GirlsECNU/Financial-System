@@ -1,9 +1,9 @@
 
 <template>
   <div class="w-full h-full overflow-y-scroll	 overflow-x-hidden	">
-    <el-button type="primary" @click="confirm">
+    <!-- <el-button type="primary" @click="confirm">
       确认参数
-    </el-button>
+    </el-button> -->
     <div class="mt-2 pl-2 " v-for="(i, idx)  in modelConfig" :key="idx">
       <el-row>
         <el-col :span="10">

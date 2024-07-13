@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS "public"."model";
 CREATE TABLE "public"."model" (
   "id" int4 NOT NULL DEFAULT nextval('model_id_seq'::regclass),
   "model_name" varchar(255) COLLATE "pg_catalog"."default",
-  "model_config" json
+  "model_config1" json
 )
 ;
 

@@ -61,10 +61,11 @@ const props = defineProps({
 
 let transferMapping = () => {
   let mapping = props.mapping
-  if (!mapping.hasOwnProperty('X') || !mapping.hasOwnProperty('X_predict') || !mapping.hasOwnProperty('date')) {
-    console.log('mapping object is not correct', mapping)
-    return
-  }
+  //7.4添加多选功能
+  // if (!mapping.hasOwnProperty('X') || !mapping.hasOwnProperty('X_predict') || !mapping.hasOwnProperty('date')) {
+  //   console.log('mapping object is not correct', mapping)
+  //   return
+  // }
   console.log(props.formData)
   var out = []
   for (let j = 0; j < mapping.X.length; j++) {
@@ -84,7 +85,7 @@ let transferMapping = () => {
 
 let getdataTS = () => {
   let data = transferMapping()
-  console.log(data)
+  console.log("getdataTS",data)
   data[0].forEach(element => {
     X.value.push(element.X);
     X_predict.value.push(element.X_predict);
@@ -242,6 +243,7 @@ let initTimeSeries = () => { // 初始化时序数据预测图
         filterMode: 'filter'
       }
     ],
+    animation: true,
     animationDuration: 2000
   }
   // chartInstance.showLoading({
@@ -281,7 +283,14 @@ const resizeWindow = () => {
   let chartInstance = echarts.getInstanceByDom(document.getElementById(props.chart))
   chartInstance.resize()
 }
-let refreshData = () => {
+const refreshData = () => {
+  X = ref([])
+  X_predict = ref([])
+  max = ref([])
+  min = ref([])
+  date = ref([])
+  getdataTS()
+  
   const initOption = {
     title: {
       textAlign: 'center',
@@ -419,6 +428,7 @@ let refreshData = () => {
   }
   let chartInstance = echarts.getInstanceByDom(document.getElementById(props.chart))
   chartInstance.setOption(initOption)
+  
 }
 defineExpose({
   refreshData,
