@@ -1,5 +1,5 @@
 <template>
-  <div class="login-form">
+  <div class="register-form">
     <h2>注册</h2>
     <form @submit.prevent="userRegister">
       <div class="form-group">
@@ -14,6 +14,11 @@
         <label for="tel">手机号：</label>
         <input type="text" id="tel" v-model="tel">
       </div>
+      <div class="form-group">
+        <label for="verifyCode">验证码：</label>
+        <input type="text" id="verifyCode" v-model="verifyCode">
+        <sidentify :identifyCode="identifyCode" @click="refreshCode"></sidentify>
+      </div>
       <button type="submit">注册新账号</button>
     </form>
     <p>{{ message }}</p> <!-- 显示登录结果的消息 -->
@@ -25,68 +30,55 @@
 import { execInsert,execQuery } from '@/api/sqllab/utils';
 
 import { useStore } from 'vuex';
-
-//import Client from 'pg';
-
-//const { Client } = require('pg');
+import Sidentify from './Sidentify.vue';
 
 export default {
+  components: { Sidentify },
   data() {
     return {
-      user_id: '',
-      password: '',
-      tel: '',
-      loading: false,
-      error: '',
-      message:''
+      model:{
+        user_id: '',
+        password: '',
+        tel: '',
+        loading: false,
+        error: '',
+        message:'',
+        verifyCode:''
+      },
+      identifyCodes:"1234567890",
+      identifyCode:''
     };
   },
+
+  mounted() {
+      // 验证码初始化
+      this.identifyCode = '';
+      this.makeCode();
+  
+  },
+
   methods: {
+    //验证码----start
+    randomNum(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    },
+    refreshCode() {
+      this.identifyCode = "";
+      this.makeCode(this.identifyCodes, 4);
+    },
+    makeCode() {
+      for (let i = 0; i < 4; i++) {
+        this.identifyCode += this.identifyCodes[
+          this.randomNum(0, this.identifyCodes.length)
+        ];
+      }
+      console.log("this.identifyCode:", this.identifyCode);
+    },
+    //验证码----end
+
     async userRegister() {
       this.loading = true;
       try {
-        // const query = "INSERT INTO public.\"user\" (\"user_id\", \"password\", \"tel\") VALUES ('userId','passWord','TEL')"
-        // const newQuery1_history = query.replace(/userId/g, this.user_id);
-        // const newQuery2_history =newQuery1_history.replace(/passWord/g, this.password);
-        // const newQuery3_history =newQuery2_history.replace(/TEL/g, this.tel);
-
-        // const client = new Client({
-        //     database: "al",
-        //     host: "47.95.213.242",
-        //     password:"zzh0117.",
-        //     port:"5433",
-        //     query:newQuery3_history,
-        //     type: "psql",
-        //     user: "postgres"
-        // })
-        // const new_query = client.query;
-
-        // client.connect((err) =>{
-        //   if (err) throw err;
-        //   console.log('connected!');
-        // })
-
-        // client.query('BEGIN', (err) => {
-        //   if (err) throw err;
-        //   client.query(new_query, (err, res) => {
-        //     if (err) throw err;
-        //   })
-
-        //   client.query('COMMIT', (err) => {
-        //     if (err) {
-        //       client.query('ROLLBACK', (err) => {
-        //         if (err) throw err;
-        //       })
-        //     }
-        //     console.log('success!');
-        //   })
-        // })
-
-        // app.post('/upload', upload.single('file'), (req, res) => {
-        //   const filePath = req.file.path;
-        //   const results = [];
-        // })
-
         const no_same_config = {
           database: "al",
           host: "47.95.213.242",
@@ -118,8 +110,18 @@ export default {
 
         if (info.length > 0) {
             this.message = '这个用户名已经被其他用户使用，请换一个吧';
-
             this.user_id = ''
+            this.$forceUpdate();
+        }
+        else if(this.tel.length != 11) {
+          this.message = '请输入正确的手机号码';
+          this.tel = '';
+          this.$forceUpdate();
+        }
+        else if(this.verifyCode != this.identifyCode) {
+          this.message = '验证码输入错误';
+          this.verifyCode = '';
+          this.$forceUpdate();
         }
         else{
           const user_config = {
@@ -159,36 +161,6 @@ export default {
 
           this.$router.push({ name: 'home' });
         }
-
-        // const config = {
-        //   database: "al",
-        //   host: "47.95.213.242",
-        //   password:"zzh0117.",
-        //   port:"5433",
-        //   // query:"SELECT COUNT(*) FROM public.\"user\"",
-        //   query:"SELECT * FROM public.\"user\" WHERE \"user_id\" = 'userId' AND \"password\" = 'passWord'",
-        //   // query:"SELECT * FROM public.\"user\" WHERE \"user_id\" = 'userId'",
-        //   type: "psql",
-        //   user: "postgres"
-        // };
-        // //console.log("user_config",user_config)
-        // const Query1_history = config.query.replace(/userId/g, this.user_id);
-        // const Query2_history =Query1_history.replace(/passWord/g, this.password);
-        // const Data_history = {
-        //   database: "al",
-        //   host: "47.95.213.242",
-        //   password:"zzh0117.",
-        //   port:"5433",
-        //   query:Query2_history,
-        //   type: "psql",
-        //   user: "postgres"
-        // }
-        // console.log("Data_history",Data_history);
-
-        // let response = await execQuery(Data_history);
-        // console.log('success!');
-        // const user_info = response.data;
-        // console.log("user_info",user_info);
         
       } catch (error) {
         // 处理错误情况，例如网络错误等
@@ -205,7 +177,7 @@ export default {
 
 
 <style scoped>
-.login-form {
+.register-form {
   max-width: 300px;
   margin: auto;
   padding: 20px;
