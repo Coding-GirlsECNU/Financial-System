@@ -64,6 +64,32 @@ def exec_sql(datasrc:DataSourceConfig):
     except Exception as e :
         print(e)
 
+# login
+        
+def exec_insert(datasrc: DataSourceConfig):
+    try:
+        if datasrc.type == "mysql":
+            SQL = SQLALCHEMY_DATABASE_URL_MYSQL.format(user=datasrc.user, host=datasrc.host, port=datasrc.port,
+                                                       database=datasrc.database, password=datasrc.password)
+        else:
+            SQL = PSQL.format(user=datasrc.user, host=datasrc.host, port=datasrc.port, database=datasrc.database,
+                              password=datasrc.password)
+        
+        engine = create_engine(SQL)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        with session.begin():
+            result = session.execute(text(datasrc.query))
+        
+        return {"success": True, "message": "Insert operation successful."}
+
+    except SQLAlchemyError as e:
+        error_message = str(e)
+        print(error_message)
+        return {"success": False, "message": f"Insert operation failed. Error: {error_message}"}
+
+
 
 def save_database(payload):
     msg = {'code':200,'msg':'success','data':None}

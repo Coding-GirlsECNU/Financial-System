@@ -36,6 +36,17 @@ def exec_query(datameta:DataSourceConfig = Depends(DataSourceConfig)):
         raise HTTPException(status_code=500,detail=str(e)+'something wrong with your sql query')
 
 
+# login
+
+@router.post("/execinsert")
+def execinsert(datameta:DataSourceConfig = Depends(DataSourceConfig)):
+    try:
+        meta = datasrc_meta.exec_insert(datameta)
+        return meta
+    except Exception as e :
+        raise HTTPException(status_code=500,detail=str(e)+'something wrong with your sql query')
+
+
 @router.post("/save_datasrc")
 async def save_database_controller(database:DataSource):
     msg = save_database(database)

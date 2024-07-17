@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full" style="margin-left: 15px;">
-    <!-- <div class="flex h-0">
+    <div class="flex h-0">
       <el-steps class="w-full" :active="active" align-center style="margin-top: 5px;">
         <el-step title="Step 1" description="Choose your database" />
         <el-step title="Step 2" description="choose your chart" />
@@ -67,7 +67,7 @@
           <el-option v-for="item in chartOption" :key="item" :label="item" :value="item" />
         </el-select>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 

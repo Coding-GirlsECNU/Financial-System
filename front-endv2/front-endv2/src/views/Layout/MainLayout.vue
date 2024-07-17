@@ -7,6 +7,19 @@
                     <div class="text-4xl font-bold" style="display: flex; justify-content: center; align-items: center; flex: 1;">
                         算法可视化平台
                     </div>
+                    <div style="margin-right: 10px;">
+                        <!-- 根据用户登录状态显示不同内容 -->                      
+                        <template v-if="$store.state.isLoggedIn">
+                            
+                            <div class="logged-in-info">
+                              <span class="logged-in-text">Hi! {{ $store.state.username }} <el-icon style="margin-left: 2px;"><User /></el-icon></span>                      
+                              <el-button type="text" @click="goToLogout" class="btn three">退出</el-button>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <el-button type="text" @click="goToLoginOrRegister"  class="btn one">登录/注册</el-button>
+                        </template>
+                    </div>
                 </div>
             </el-header>
 
@@ -71,8 +84,9 @@
 
 <script setup>
 import { RouterView, useRoute } from 'vue-router';
-import { ref } from "vue";
+import { ref} from "vue";
 import { onMounted } from 'vue'
+
 
 // let defaultActivate = ref('0')
 let defaultActivate = ref('1')
@@ -108,6 +122,23 @@ pathNameMapping.forEach(item => {
 //     })
 
 
+
+</script>
+
+<script>
+
+export default {
+    methods:{
+      async goToLoginOrRegister() {
+        this.$router.push({ name: 'login' });
+      },
+      async goToLogout() {
+        this.$store.commit('setLoggedIn', false);
+        this.$store.commit('setUsername', '');
+        this.$router.push({ name: 'home' });
+      }
+    }
+}
 
 </script>
 
@@ -168,5 +199,54 @@ pathNameMapping.forEach(item => {
     background-color:  hsla(215, 30%, 83%, 0.922); /* 悬停时的背景颜色 */
 }
 
+
+.btn {
+  border: 1px solid;
+  background-color: transparent;
+  text-transform: uppercase;
+  font-size: 14px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+.one {
+  color: #4cc9f0;
+}
+
+.btn:hover {
+  color: white;
+  border: 0;
+}
+
+.one:hover {
+  background-color: #4cc9f0;
+  -webkit-box-shadow: 10px 10px 99px 6px rgba(76,201,240,1);
+  -moz-box-shadow: 10px 10px 99px 6px rgba(76,201,240,1);
+  box-shadow: 10px 10px 99px 6px rgba(76,201,240,1);
+}
+
+.three {
+  color: #b9e769;
+}
+
+.three:hover {
+  background-color: #b9e769;
+  -webkit-box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
+  -moz-box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
+  box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
+}
+
+.logged-in-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.logged-in-text {
+    margin-bottom: 8px; /* Adjust as needed for spacing */
+    font-weight: bold;
+    font-size: 16px; /* Example of custom styling */
+
+}
 
 </style>

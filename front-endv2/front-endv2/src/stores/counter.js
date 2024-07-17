@@ -24,3 +24,40 @@ export const useBootstrapStore = defineStore('bootstrap', () => {
   return  {setBootstrap,bootstrap}
 
 })
+
+
+//新增登录功能
+import { createStore } from 'vuex';
+
+const store = createStore({
+  state: {
+    isLoggedIn: false, // 用户登录状态
+    username: '', // 用户名
+  },
+  mutations: {
+    // 更新用户登录状态和用户名的 mutation
+    setLoggedIn(state, isLoggedIn) {
+      state.isLoggedIn = isLoggedIn;
+    },
+    setUsername(state, username) {
+      state.username = username;
+    },
+  },
+  actions: {
+    // 异步操作，例如登录
+    async login({ username }) {
+      // 这里可以添加登录逻辑，例如调用API进行验证等
+      // 假设验证成功，将用户信息存储到 state 中
+      commit('setLoggedIn', true);
+      commit('setUsername', username);
+    },
+    // 退出登录操作
+    logout({ commit }) {
+      // 清空用户信息
+      commit('setLoggedIn', false);
+      commit('setUsername', '');
+    }
+  }
+});
+
+export default store;
