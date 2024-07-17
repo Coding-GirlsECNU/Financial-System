@@ -31,8 +31,7 @@ let example = ref(null)
 //加上selectDataset
 watch(selectedModel, (val, oldVal) => {
     let model = models.value.filter(model => model.model_name === val)[0]
-    mapping.value = model.model_config1.input
-    example.value = model.model_config1.example
+
 })
 let handleConfig = (arg) => {
     arg.forEach(item => {
