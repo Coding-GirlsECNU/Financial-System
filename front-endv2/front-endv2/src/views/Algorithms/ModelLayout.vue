@@ -16,18 +16,6 @@
                     </div>
                 </div>
             </div>
-
-            <!--<div class="styled-span">
-                <span>
-                    选择数据集
-                </span>
-                <el-select v-model="selectedDataset">
-                    <el-option v-for="(val, idx) in datasets" :key="idx + 2324" :label="val.dataset_name"
-                        :value="val.datasetid">
-                        {{ val.dataset_name }}
-                    </el-option>
-                </el-select>
-            </div>-->
         </div>
         
         <div class="w-full h-full">
@@ -46,11 +34,8 @@
                 <el-col :span="20" class="w-full h-full mt-12" style="margin-left: 20px;">
                     <el-date-picker v-model="chooseDate" type="date" placeholder="选择日期" :disabled-date="checkAllowedDates" :defaultValue="start_date" @change="dateChange"> 
                     </el-date-picker>
-                </el-col><!--7.8增加多选功能-->
-                <!-- <el-table :data="tableData" border style="width: 1200px; margin-top: -190px; margin-left: 28px;" class="bg-sky-50">
-                    <el-table-column prop="stock" label="股票名称"></el-table-column>
-                    <el-table-column prop="rank" label="排名"></el-table-column>
-                </el-table> -->
+                </el-col>
+    
                 <el-table :data="tableData" border style="width: 1200px; margin-top: -190px; margin-left: 28px;" class="bg-sky-50">
                     <el-table-column prop="modelName" label="模型名称"></el-table-column>
                     <el-table-column>
@@ -221,60 +206,7 @@ let fetchData_liner = async () => {
     return newTable;
 };
 
-// let fetchData_liner = async () => {
 
-//   let query_total="SELECT * FROM public.\"total_value\" WHERE \"strategy\"='modelName' ORDER BY date ASC"
-
-//   const newQuery_total = query_total.replace('modelName', selectedModel.value);
-//   const newData_total = {
-//     database: "al",
-//     host: "47.95.213.242",
-//     password:"zzh0117.",
-//     port:"5433",
-//     query:newQuery_total,
-//     type: "psql",
-//     user: "postgres"
-// }
-//   console.log("total_config",newData_total)
-//   let total_table = await execQuery(newData_total)
-//   console.log("total",total_table.data)
-//   const totalData = total_table.data;
-//   // 创建一个空数组用于存储合并后的数据
-//   let newTable = [];
-//   for (let i = 0; i < totalData.length; i++) {
-//     let newData = {};
-
-//     // 设置日期属性
-//     newData.date = totalData[i].date;
-
-//     // 设置实际值属性
-//     newData.x_orient = totalData[i].total_value;
-
-//     // 将新对象添加到数组中
-//     newTable.push(newData);
-// }
-
-//     return newTable
-// }
-
-// let fetchData_table = async () => {
-//   const metrics_query="SELECT stock, rank FROM public.selection WHERE date='chooseDate' AND strategy='selectedModel' ORDER BY rank ASC"
-//   const newQuery1_metrics = metrics_query.replace(/chooseDate/g, dateString);
-//   const newQuery2_metrics =newQuery1_metrics.replace(/selectedModel/g, selectedModel.value);
-//   const data_metrics = {
-//     database: "al",
-//     host: "47.95.213.242",
-//     password:"zzh0117.",
-//     port:"5433",
-//     query:newQuery2_metrics,
-//     type: "psql",
-//     user: "postgres"
-// };
-//     console.log("query",data_metrics)
-//   let table = await execQuery(data_metrics)
-//   console.log("tableData_table",table)
-//     return table.data
-// }
 
 
 //增加多选功能

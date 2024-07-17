@@ -25,7 +25,8 @@ const router = createRouter({
             //  就是一个空白界面，或者放点图？
             children: [
                 {
-                    path: 'chart', component: () => import('../views/ChartView/NewChartView.vue'), name: 'newChartView',
+                    path: 'chart', component: () => import('../views/ChartView/NewChartView.vue'), 
+                    name: 'newChartView',
                     redirect: '/sys/chart/choose',
                     children: [
                         {
@@ -75,6 +76,19 @@ const router = createRouter({
                 }
                 
             ]
+        },
+
+        //login
+
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('../views/Layout/LoginLayout.vue')
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: () => import('../views/Layout/RegisterLayout.vue')
         }
         // {
         //   path:'/chart/:id',
