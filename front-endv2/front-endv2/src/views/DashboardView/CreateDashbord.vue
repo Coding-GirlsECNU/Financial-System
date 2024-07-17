@@ -1,62 +1,6 @@
 <template>
     <div class="w-full h-screen">
-        <div class="flex justify-start" style="margin-left: 25px;margin-top: 18px;">
-            <div class="module-border-wrap flex items-center">
-                <div class="module" style="margin-left: 6px; width: 100px;">
-                    <span class="blink" >选择策略</span>
-                </div>
-                <el-select v-model="selectedModel" style="margin-left: 6px; width: 350px;">
-                    <el-option v-for="val in models" :key="val.id" :value="val.model_name">
-                        {{ val.model_name }}
-                    </el-option>
-                </el-select>
-                <div class="flex gap-8" style="margin-left: 10px;margin-right: 8px;">
-                    <div>
-                        <el-button type="primary" @click="confirm">开始绘制</el-button>
-                    </div>
-                </div>
-            </div>
-            <div class="module-border-wrap">
-                <div class="module">
-                    说明：若使用PatchTST&Factors模型，还会展示因子变量
-                </div>
-            </div>
-        </div>
-        <div class="h-1/2 border-gray-400 bg-sky-50" style="margin-top: 18px; max-width: 1210px;">
-                        <SingleLineChart_sharpe v-if="linerdata && linerdata.length > 0" :formData="linerdata" :chart="'SLC'" ref="chartRef" :mapping="mapping"/>
-                    </div>
-        <!--这边添加图标-->
-        <div class="w-full h-full flex justify-center items-center">
-            <div style="width: 80%; height: 80%;">
-                <div style="display: grid; grid-template-columns: 1fr 800px 1fr; grid-template-rows: auto; grid-gap: 120px;">
-                    <!-- <SingleLineChart_sharpe v-if="linerdata && linerdata.length > 0" :formData="linerdata" :chart="'SLC'" ref="chartRef" :mapping="mapping"/> -->
-                    <!-- <span style="background-color: white; grid-column: 2 ; position: relative;">
-                        <img src="image1.jpg" alt="Image 1" style="width: 100%; height: 100%; object-fit: cover;">
-                    </span>
-                    <span style="background-color: white; grid-column: 2 ; position: relative;">
-                        <img src="image1.jpg" alt="Image 2" style="width: 100%; height: 100%; object-fit: cover;">
-                    </span> -->
-                </div>
-            </div>
-            <!-- <div class="w-full h-full flex justify-center items-center">
-                <div class="module-border-wrap1">
-                    <div class="module">
-                        每阶段的因子变量
-                    </div>
-                </div>
-            </div>           -->
-        </div>
 
-        <div class="w-full h-full" style="margin-top: -300px;">
-            <div style="width: 100%; height: 100%;">         
-                <div style="display: grid; grid-template-columns: 1fr 700px 1fr; grid-template-rows: auto;">
-                    
-                    <!-- <span style="background-color: white; grid-column: 2 ; position: relative;">
-                        <img src="image1.jpg" alt="Image 3" style="width: 100%; height: 100%; object-fit: cover;">
-                    </span> -->
-                </div>
-            </div>
-        </div>
     </div>
 </template>
  
@@ -87,8 +31,7 @@ let example = ref(null)
 //加上selectDataset
 watch(selectedModel, (val, oldVal) => {
     let model = models.value.filter(model => model.model_name === val)[0]
-    mapping.value = model.model_config.input
-    example.value = model.model_config.example
+
 })
 let handleConfig = (arg) => {
     arg.forEach(item => {
