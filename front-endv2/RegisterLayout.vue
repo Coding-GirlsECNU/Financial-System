@@ -108,10 +108,19 @@ export default {
         const info = newResponse.data;
         console.log("user_info",info);
 
+        var reg = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*.])[\da-zA-Z~!@#$%^&*.]{6,}$/;
+        //密码至少6位，必须包含字母、数字、特殊符号
+
         if (info.length > 0) {
             this.message = '这个用户名已经被其他用户使用，请换一个吧';
             this.user_id = ''
             this.$forceUpdate();
+        }
+        else if(!(reg.test(this.password)))
+        {
+          this.message = '请输入符合要求的密码';
+          this.password = '';
+          this.$forceUpdate();
         }
         else if(this.tel.length != 11) {
           this.message = '请输入正确的手机号码';
