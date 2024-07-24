@@ -111,6 +111,7 @@ import { GenNonDuplicateID } from '../../utils/utils';
 const router = useRouter()
 const bootstrapStore = useBootstrapStore();
 let options = ref(bootstrapStore.bootstrap.model_datasets);
+console.log("options",options)
 let uniqueDatasets = [...new Set(options.value.map(item => item.dataset))];
 //需要改：确保每个用户都能看到自己的数据集
 console.log("uniqueDatasets",uniqueDatasets)

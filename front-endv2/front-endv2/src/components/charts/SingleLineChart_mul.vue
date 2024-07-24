@@ -50,16 +50,13 @@ const props = defineProps({
 });
 
 let getdataTS = () => {
-  // 初始化 returns 和 date
   let modelNames = Object.keys(props.formData[0]).filter(key => key !== 'date');
   let seriesData = modelNames.map(name => ({
     name,
     data: props.formData.map(item => ({ date: item.date, returns: item[name] }))
   }));
-
   date.value = props.formData.map(item => item.date);
   returns.value = seriesData;
-  console.log(returns.value);
 };
 
 let initTimeSeries = () => {
@@ -72,7 +69,6 @@ let initTimeSeries = () => {
       symbol: 'circle',
       symbolSize: 5,
       data: dataset.data.map(item => item.returns),
-      // 为了更好的区分不同的模型，可以给每个模型设置不同的颜色
       color: `#${Math.floor(Math.random()*16777215).toString(16)}` 
     }
   });
@@ -156,7 +152,7 @@ let initTimeSeries = () => {
   }
 
   setTimeout(() => {
-    chartInstance.setOption(initOption);
+    chartInstance.setOption(initOption, true);
     chartInstance.on('finished', function () {
       if (props.mode === 'pic') {
         let data = chartInstance.getDataURL({
@@ -165,7 +161,6 @@ let initTimeSeries = () => {
         });
         let imgItem = document.createElement('img');
         imgItem.src = data;
-        console.log(data);
         imgItem.style.width = '100%';
         imgItem.style.height = '100%';
         let container = document.getElementById(props.chart)?.parentNode;
@@ -177,6 +172,9 @@ let initTimeSeries = () => {
         }
       }
     });
+    chartInstance.on('restore', () => {
+      refreshData();
+    });
   }, 0);
 }
 
@@ -185,7 +183,7 @@ const resizeWindow = () => {
   chartInstance.resize();
 }
 
-let refreshData = () => {
+const refreshData = () => {
   returns = ref([]);
   date = ref([]);
   getdataTS();
@@ -269,7 +267,7 @@ let refreshData = () => {
   }
 
   let chartInstance = echarts.getInstanceByDom(document.getElementById(props.chart));
-  chartInstance.setOption(initOption);
+  chartInstance.setOption(initOption, true);
 }
 
 defineExpose({
