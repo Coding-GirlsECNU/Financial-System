@@ -1,5 +1,8 @@
 # Introduction
 
+# Updating... Please wait for manager merging codes. 
+# Use zcy_branch codes first, it's the latest version.
+
 ## scaffold
 
 > app: backend of this project,you may ignore this directory
