@@ -1,7 +1,6 @@
 # Introduction
 
-# Updating... Please wait for manager merging codes. 
-# Use zcy_branch codes first, it's the latest version.
+# Version 1.0 has uploaded just now !!! Download from the main branch !!!
 
 ## scaffold
 
